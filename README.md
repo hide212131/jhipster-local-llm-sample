@@ -1,4 +1,36 @@
-# myLlmApp
+# Example implementation of an OpenAI API compatible server using JHipster and llama.cpp, a local LLM
+
+Thanks to the wonderful [JHispter](https://www.jhipster.tech/), [llama.cpp](https://github.com/ggerganov/llama.cpp), [Java Bindings for llama.cpp](https://github.com/kherud/java-llama.cpp) and all the open llm.
+
+![jhipster-llm](jhipster-llm.gif)
+
+Confirmed accessible via [Chatbot ui](https://github.com/mckaywrigley/chatbot-ui).
+
+Only Macbook pro m3 is confirmed to work.
+
+## Prerequisites
+
+The following environment variables must be set in Chatbot ui.
+
+```bash
+export OPENAI_API_HOST=http://localhost:8080
+export OPENAI_API_KEY=(random key. not used)
+export OPENAI_API_TYPE=local
+```
+
+Download the LLM for testing with the following command.
+
+```bash
+./mvnw verify
+```
+
+## Running the server
+
+```bash
+./mvnw
+```
+
+# Original JHipster README.md
 
 This application was generated using JHipster 8.1.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.1.0](https://www.jhipster.tech/documentation-archive/v8.1.0).
 

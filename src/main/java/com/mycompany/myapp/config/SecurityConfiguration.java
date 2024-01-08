@@ -86,6 +86,7 @@ public class SecurityConfiguration {
                     .pathMatchers("/management/info").permitAll()
                     .pathMatchers("/management/prometheus").permitAll()
                     .pathMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .pathMatchers("/v1/**").permitAll()
             )
             .httpBasic(basic -> basic.disable())
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

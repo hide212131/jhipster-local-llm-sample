@@ -151,3 +151,8 @@ Desktop.ini
 ######################
 /coverage/
 /.nyc_output/
+
+######################
+# LLM Models
+######################
+/models/*.gguf
