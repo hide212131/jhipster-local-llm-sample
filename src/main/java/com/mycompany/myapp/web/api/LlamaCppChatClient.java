@@ -11,7 +11,7 @@ import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.Generation;
 import org.springframework.ai.chat.StreamingChatClient;
-import org.springframework.ai.prompt.Prompt;
+import org.springframework.ai.chat.prompt.Prompt;
 import reactor.core.publisher.Flux;
 
 public class LlamaCppChatClient implements ChatClient, StreamingChatClient {
@@ -39,7 +39,7 @@ public class LlamaCppChatClient implements ChatClient, StreamingChatClient {
     }
 
     @Override
-    public ChatResponse generate(Prompt prompt) {
+    public ChatResponse call(Prompt prompt) {
         LlamaModel.setLogger((level, message) -> System.out.print(message));
         var modelParams = new ModelParameters().setNGpuLayers(1);
         var inferParams = new InferenceParameters()
@@ -62,7 +62,7 @@ public class LlamaCppChatClient implements ChatClient, StreamingChatClient {
     }
 
     @Override
-    public Flux<ChatResponse> generateStream(Prompt prompt) {
+    public Flux<ChatResponse> stream(Prompt prompt) {
         logger.info("generateStream: prompt={}", prompt.getContents());
         LlamaModel.setLogger((level, message) -> System.out.print(message));
         var modelParams = new ModelParameters().setNGpuLayers(1);

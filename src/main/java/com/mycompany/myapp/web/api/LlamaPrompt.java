@@ -1,11 +1,11 @@
 package com.mycompany.myapp.web.api;
 
 import java.util.List;
-import org.springframework.ai.prompt.Prompt;
-import org.springframework.ai.prompt.messages.AssistantMessage;
-import org.springframework.ai.prompt.messages.Message;
-import org.springframework.ai.prompt.messages.SystemMessage;
-import org.springframework.ai.prompt.messages.UserMessage;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.Prompt;
 
 public class LlamaPrompt extends Prompt {
 
@@ -16,7 +16,7 @@ public class LlamaPrompt extends Prompt {
     @Override
     public String getContents() {
         var sb = new StringBuilder();
-        var messages = getMessages();
+        var messages = getInstructions();
         var systemMessage = messages
             .stream()
             .filter(m -> m instanceof SystemMessage)

@@ -83,7 +83,7 @@
         <sonar-maven-plugin.version>3.10.0.2594</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.41.1</spotless-maven-plugin.version>
         <spring-ai.version>0.8.0-SNAPSHOT</spring-ai.version>
-        <java-llamacpp.version>2.3.1</java-llamacpp.version>
+        <java-llamacpp.version>2.3.5</java-llamacpp.version>
         <model.home>${project.basedir}/models</model.home>
         <integration.test.model>mistral-7b-instruct-v0.2.Q2_K.gguf</integration.test.model>
         <integration.test.model.url>https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/${integration.test.model}</integration.test.model.url>

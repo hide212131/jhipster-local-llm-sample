@@ -7,10 +7,10 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.ai.chat.ChatResponse;
-import org.springframework.ai.prompt.messages.AssistantMessage;
-import org.springframework.ai.prompt.messages.Message;
-import org.springframework.ai.prompt.messages.SystemMessage;
-import org.springframework.ai.prompt.messages.UserMessage;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -59,12 +59,12 @@ public class FluxChatApiController implements FluxChatApi {
                     .toList()
             );
 
-            Flux<ChatResponse> chatResponseFlux = chatClient.generateStream(prompt);
+            Flux<ChatResponse> chatResponseFlux = chatClient.stream(prompt);
             var date = System.currentTimeMillis();
             return chatResponseFlux
                 .map(chatResponse -> {
                     var responseDelta = new ChatCompletionStreamResponseDelta()
-                        .content(chatResponse.getGeneration().getContent())
+                        .content(chatResponse.getResult().getOutput().getContent())
                         .role(ChatCompletionStreamResponseDelta.RoleEnum.ASSISTANT);
                     var choices = new CreateChatCompletionStreamResponseChoicesInner().index(0L).finishReason(null).delta(responseDelta);
                     return new CreateChatCompletionStreamResponse(
