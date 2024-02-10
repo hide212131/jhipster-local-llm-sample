@@ -1,5 +1,6 @@
 package com.mycompany.myapp.web.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.web.rest.vm.LoginVM;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 class AuthenticateControllerIT {
 
     @Autowired
+    private ObjectMapper om;
+
+    @Autowired
     private WebTestClient webTestClient;
 
     @Test
@@ -27,7 +31,7 @@ class AuthenticateControllerIT {
             .post()
             .uri("/api/authenticate")
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(TestUtil.convertObjectToJsonBytes(login))
+            .bodyValue(om.writeValueAsBytes(login))
             .exchange()
             .expectStatus()
             .isOk()
@@ -48,7 +52,7 @@ class AuthenticateControllerIT {
             .post()
             .uri("/api/authenticate")
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(TestUtil.convertObjectToJsonBytes(login))
+            .bodyValue(om.writeValueAsBytes(login))
             .exchange()
             .expectStatus()
             .isOk()
@@ -68,7 +72,7 @@ class AuthenticateControllerIT {
             .post()
             .uri("/api/authenticate")
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(TestUtil.convertObjectToJsonBytes(login))
+            .bodyValue(om.writeValueAsBytes(login))
             .exchange()
             .expectStatus()
             .isUnauthorized()

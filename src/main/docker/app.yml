@@ -7,12 +7,23 @@ services:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
       - SPRING_PROFILES_ACTIVE=prod,api-docs
       - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgresql:5432/myLlmApp
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/myLlmApp
     ports:
       - 127.0.0.1:8080:8080
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8080/management/health']
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/management/health
       interval: 5s
       timeout: 5s
       retries: 40
+    depends_on:
+      postgresql:
+        condition: service_healthy
+  postgresql:
+    extends:
+      file: ./postgresql.yml
+      service: postgresql

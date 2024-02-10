@@ -31,6 +31,14 @@ spring:
       enabled: false
     livereload:
       enabled: false
+  # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
+  liquibase:
+    contexts: prod
+    url: jdbc:postgresql://localhost:5432/myLlmApp
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/myLlmApp
+    username: myLlmApp
+    password:
   thymeleaf:
     cache: true
 

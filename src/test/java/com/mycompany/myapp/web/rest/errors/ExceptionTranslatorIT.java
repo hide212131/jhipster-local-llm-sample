@@ -23,6 +23,21 @@ class ExceptionTranslatorIT {
     private WebTestClient webTestClient;
 
     @Test
+    void testConcurrencyFailure() {
+        webTestClient
+            .get()
+            .uri("/api/exception-translator-test/concurrency-failure")
+            .exchange()
+            .expectStatus()
+            .isEqualTo(HttpStatus.CONFLICT)
+            .expectHeader()
+            .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .expectBody()
+            .jsonPath("$.message")
+            .isEqualTo(ErrorConstants.ERR_CONCURRENCY_FAILURE);
+    }
+
+    @Test
     void testMethodArgumentNotValid() {
         webTestClient
             .post()
