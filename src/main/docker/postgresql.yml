@@ -2,7 +2,7 @@
 name: myllmapp
 services:
   postgresql:
-    image: postgres:16.1
+    image: pgvector/pgvector:pg16
     # volumes:
     #   - ~/volumes/jhipster/myLlmApp/postgresql/:/var/lib/postgresql/data/
     environment:

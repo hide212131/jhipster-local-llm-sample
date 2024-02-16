@@ -36,30 +36,4 @@ public class ChatCompletionRequestMessageDeserializer extends JsonDeserializer<C
 
         throw new RuntimeException("Unknown role: " + role);
     }
-
-    @Configuration
-    @EnableConfigurationProperties(LlamaCppProperties.class)
-    public static class LlamaCppAutoConfiguration {
-
-        private final LlamaCppProperties llamaCppProperties;
-
-        private final Logger logger = LoggerFactory.getLogger(getClass());
-
-        public LlamaCppAutoConfiguration(LlamaCppProperties llamaCppProperties) {
-            this.llamaCppProperties = llamaCppProperties;
-        }
-
-        @Bean
-        @ConditionalOnMissingBean
-        public LlamaCppChatClient llamaCppChatClient() {
-            LlamaCppChatClient llamaCppChatClient = new LlamaCppChatClient();
-            llamaCppChatClient.setModelHome(this.llamaCppProperties.getModelHome());
-            llamaCppChatClient.setModelName(this.llamaCppProperties.getModelName());
-            logger.info(
-                "LlamaCppChatClient created: model={}",
-                Path.of(llamaCppChatClient.getModelHome(), llamaCppChatClient.getModelName())
-            );
-            return llamaCppChatClient;
-        }
-    }
 }

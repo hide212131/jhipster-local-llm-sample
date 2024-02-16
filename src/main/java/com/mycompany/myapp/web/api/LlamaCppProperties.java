@@ -7,8 +7,8 @@ public class LlamaCppProperties {
 
     public static final String CONFIG_PREFIX = "spring.ai.llama-cpp";
 
-    private String modelHome = "/opt/models";
-    private String modelName = "codellama-13b.Q5_K_M.gguf";
+    private String modelHome = System.getProperty("user.dir") + "/models";
+    private String modelName = "mistral-7b-instruct-v0.2.Q2_K.gguf";
 
     public String getModelHome() {
         return modelHome;

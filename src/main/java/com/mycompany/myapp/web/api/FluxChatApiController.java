@@ -4,13 +4,18 @@ import com.mycompany.myapp.service.api.dto.*;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -29,9 +34,12 @@ public class FluxChatApiController implements FluxChatApi {
 
     private final LlamaCppChatClient chatClient;
 
+    private final VectorStore vectorStore;
+
     @Autowired
-    public FluxChatApiController(LlamaCppChatClient chatClient) {
+    public FluxChatApiController(LlamaCppChatClient chatClient, VectorStore vectorStore) {
         this.chatClient = chatClient;
+        this.vectorStore = vectorStore;
     }
 
     @Override
@@ -58,6 +66,36 @@ public class FluxChatApiController implements FluxChatApi {
                     )
                     .toList()
             );
+
+            // search related contents from vector store
+            List<Document> results = vectorStore.similaritySearch(SearchRequest.query("Spring").withTopK(5));
+            String references = results.stream().map(Document::getContent).collect(Collectors.joining("\n"));
+            // replace last UserMessage in prompt's messages with template message with the result and UserMessage
+            var instructions = prompt.getInstructions();
+            var newInstructions = new ArrayList<>(instructions); // Mutable copy of instructions
+
+            var lastUserMessageIndex = -1;
+            for (int i = newInstructions.size() - 1; i >= 0; i--) {
+                if (newInstructions.get(i) instanceof UserMessage) {
+                    lastUserMessageIndex = i;
+                    break;
+                }
+            }
+
+            if (lastUserMessageIndex != -1) {
+                String newMessage =
+                    "Please respond to the following search results and user messages.\n" +
+                    "UserMessage: " +
+                    ((UserMessage) newInstructions.get(lastUserMessageIndex)).getContent() +
+                    "\n" +
+                    "References: " +
+                    references;
+
+                newInstructions.set(lastUserMessageIndex, new UserMessage(newMessage)); // Replace last UserMessage
+            }
+
+            // Create a new LlamaPrompt with the updated instructions
+            prompt = new LlamaPrompt(newInstructions);
 
             Flux<ChatResponse> chatResponseFlux = chatClient.stream(prompt);
             var date = System.currentTimeMillis();
