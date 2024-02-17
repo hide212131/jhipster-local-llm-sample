@@ -1,0 +1,5 @@
+entity UploadedFile {
+    fileId UUID required,
+    filename String required,
+    data Blob required
+}
