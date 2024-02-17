@@ -57,6 +57,10 @@ public class UploadedFileResource {
         if (uploadedFile.getId() != null) {
             throw new BadRequestAlertException("A new uploadedFile cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // set dummy random UUID
+        uploadedFile.setFileId(java.util.UUID.randomUUID());
+
         return uploadedFileRepository
             .save(uploadedFile)
             .map(result -> {

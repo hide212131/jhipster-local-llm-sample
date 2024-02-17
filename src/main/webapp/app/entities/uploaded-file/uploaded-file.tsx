@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
 import { openFile, byteSize, Translate, getSortState } from 'react-jhipster';
@@ -7,8 +7,10 @@ import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 import { ASC, DESC, SORT } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { IUploadedFile } from 'app/shared/model/uploaded-file.model';
+import { useDropzone } from 'react-dropzone';
 
-import { getEntities } from './uploaded-file.reducer';
+import { createEntity, getEntities } from './uploaded-file.reducer';
 
 export const UploadedFile = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +22,8 @@ export const UploadedFile = () => {
 
   const uploadedFileList = useAppSelector(state => state.uploadedFile.entities);
   const loading = useAppSelector(state => state.uploadedFile.loading);
+  const updateing = useAppSelector(state => state.updating);
+  const updateSuccess = useAppSelector(state => state.updateSuccess);
 
   const getAllEntities = () => {
     dispatch(
@@ -63,31 +67,60 @@ export const UploadedFile = () => {
     }
   };
 
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      (async () => {
+        if (acceptedFiles.length === 0) {
+          return;
+        }
+
+        const file = acceptedFiles[0];
+        const formData: IUploadedFile = {};
+
+        const buffer = await file.arrayBuffer();
+        formData.data = arrayBufferToBase64(buffer);
+        formData.filename = file.name;
+        formData.dataContentType = file.type;
+
+        dispatch(createEntity(formData));
+      })();
+    },
+    [dispatch],
+  );
+
+  function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    noClick: true,
+    noKeyboard: true,
+  });
+
+  useEffect(() => {
+    if (updateing === false && updateSuccess) {
+      navigate('/uploaded-file');
+    }
+  }, [updateSuccess, updateing, navigate]);
+
   return (
-    <div>
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
       <h2 id="uploaded-file-heading" data-cy="UploadedFileHeading">
         Uploaded Files
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
-          </Button>
-          <Link to="/uploaded-file/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Uploaded File
-          </Link>
-        </div>
       </h2>
       <div className="table-responsive">
         {uploadedFileList && uploadedFileList.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
-                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('fileId')}>
-                  File Id <FontAwesomeIcon icon={getSortIconByFieldName('fileId')} />
-                </th>
                 <th className="hand" onClick={sort('filename')}>
                   Filename <FontAwesomeIcon icon={getSortIconByFieldName('filename')} />
                 </th>
@@ -100,19 +133,10 @@ export const UploadedFile = () => {
             <tbody>
               {uploadedFileList.map((uploadedFile, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/uploaded-file/${uploadedFile.id}`} color="link" size="sm">
-                      {uploadedFile.id}
-                    </Button>
-                  </td>
-                  <td>{uploadedFile.fileId}</td>
                   <td>{uploadedFile.filename}</td>
                   <td>
                     {uploadedFile.data ? (
                       <div>
-                        {uploadedFile.dataContentType ? (
-                          <a onClick={openFile(uploadedFile.dataContentType, uploadedFile.data)}>Open &nbsp;</a>
-                        ) : null}
                         <span>
                           {uploadedFile.dataContentType}, {byteSize(uploadedFile.data)}
                         </span>
@@ -121,12 +145,6 @@ export const UploadedFile = () => {
                   </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/uploaded-file/${uploadedFile.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                      </Button>
-                      <Button tag={Link} to={`/uploaded-file/${uploadedFile.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
                       <Button
                         onClick={() => (window.location.href = `/uploaded-file/${uploadedFile.id}/delete`)}
                         color="danger"

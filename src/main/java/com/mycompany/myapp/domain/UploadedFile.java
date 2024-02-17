@@ -20,7 +20,6 @@ public class UploadedFile implements Serializable {
     @Column("id")
     private Long id;
 
-    @NotNull(message = "must not be null")
     @Column("file_id")
     private UUID fileId;
 
