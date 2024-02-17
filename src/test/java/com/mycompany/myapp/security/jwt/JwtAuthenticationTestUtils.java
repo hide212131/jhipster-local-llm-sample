@@ -3,6 +3,7 @@ package com.mycompany.myapp.security.jwt;
 import static com.mycompany.myapp.security.SecurityUtils.AUTHORITIES_KEY;
 import static com.mycompany.myapp.security.SecurityUtils.JWT_ALGORITHM;
 
+import com.mycompany.myapp.repository.UserRepository;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -32,6 +33,9 @@ public class JwtAuthenticationTestUtils {
     @MockBean
     private ReactiveUserDetailsService userDetailsService;
 
+    @MockBean
+    private UserRepository userRepository;
+
     public static String createValidToken(String jwtKey) {
         return createValidTokenForUser(jwtKey, "anonymous");
     }
@@ -46,7 +50,7 @@ public class JwtAuthenticationTestUtils {
             .issuedAt(now)
             .expiresAt(now.plusSeconds(60))
             .subject(user)
-            .claims(customClaim -> customClaim.put(AUTHORITIES_KEY, Collections.singletonList("ROLE_ADMIN")))
+            .claims(customClain -> customClain.put(AUTHORITIES_KEY, Collections.singletonList("ROLE_ADMIN")))
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

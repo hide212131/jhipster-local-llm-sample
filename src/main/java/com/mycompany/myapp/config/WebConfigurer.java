@@ -2,10 +2,13 @@ package com.mycompany.myapp.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.web.rest.errors.ExceptionTranslator;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.web.reactive.ResourceHandlerRegistrationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.web.ReactivePageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.ReactiveSortHandlerMethodArgumentResolver;
@@ -16,7 +19,9 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.server.WebExceptionHandler;
+import tech.jhipster.config.JHipsterConstants;
 import tech.jhipster.config.JHipsterProperties;
+import tech.jhipster.web.filter.reactive.CachingHttpHeadersFilter;
 import tech.jhipster.web.rest.errors.ReactiveWebExceptionHandler;
 
 /**
@@ -63,5 +68,18 @@ public class WebConfigurer implements WebFluxConfigurer {
     @Order(-2) // The handler must have precedence over WebFluxResponseStatusExceptionHandler and Spring Boot's ErrorWebExceptionHandler
     public WebExceptionHandler problemExceptionHandler(ObjectMapper mapper, ExceptionTranslator problemHandling) {
         return new ReactiveWebExceptionHandler(problemHandling, mapper);
+    }
+
+    @Bean
+    ResourceHandlerRegistrationCustomizer registrationCustomizer() {
+        // Disable built-in cache control to use our custom filter instead
+        return registration -> registration.setCacheControl(null);
+    }
+
+    @Bean
+    @Profile(JHipsterConstants.SPRING_PROFILE_PRODUCTION)
+    public CachingHttpHeadersFilter cachingHttpHeadersFilter() {
+        // Use a cache filter that only match selected paths
+        return new CachingHttpHeadersFilter(TimeUnit.DAYS.toMillis(jHipsterProperties.getHttp().getCache().getTimeToLiveInDays()));
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.ErrorResponse;
@@ -92,6 +93,25 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
     }
 
     private ProblemDetailWithCause getProblemDetailWithCause(Throwable ex) {
+        if (
+            ex instanceof com.mycompany.myapp.service.UsernameAlreadyUsedException
+        ) return (ProblemDetailWithCause) new LoginAlreadyUsedException().getBody();
+        if (
+            ex instanceof com.mycompany.myapp.service.EmailAlreadyUsedException
+        ) return (ProblemDetailWithCause) new EmailAlreadyUsedException().getBody();
+        if (
+            ex instanceof com.mycompany.myapp.service.InvalidPasswordException
+        ) return (ProblemDetailWithCause) new InvalidPasswordException().getBody();
+
+        if (ex instanceof AuthenticationException) {
+            // Ensure no information about existing users is revealed via failed authentication attempts
+            return ProblemDetailWithCauseBuilder
+                .instance()
+                .withStatus(toStatus(ex).value())
+                .withTitle("Unauthorized")
+                .withDetail("Invalid credentials")
+                .build();
+        }
         if (
             ex instanceof ErrorResponseException exp && exp.getBody() instanceof ProblemDetailWithCause problemDetailWithCause
         ) return problemDetailWithCause;

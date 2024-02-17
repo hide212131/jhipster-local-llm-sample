@@ -4,24 +4,23 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 import com.mycompany.myapp.security.AuthoritiesConstants;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import com.mycompany.myapp.web.filter.SpaWebFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.header.ReferrerPolicyServerHttpHeadersWriter;
 import org.springframework.security.web.server.header.XFrameOptionsServerHttpHeadersWriter.Mode;
 import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
-import org.springframework.util.StringUtils;
 import tech.jhipster.config.JHipsterProperties;
 
 @Configuration
@@ -35,19 +34,17 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public MapReactiveUserDetailsService userDetailsService(SecurityProperties properties) {
-        SecurityProperties.User user = properties.getUser();
-        UserDetails userDetails = User
-            .withUsername(user.getName())
-            .password("{noop}" + user.getPassword())
-            .roles(StringUtils.toStringArray(user.getRoles()))
-            .build();
-        return new MapReactiveUserDetailsService(userDetails);
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public ReactiveAuthenticationManager reactiveAuthenticationManager(ReactiveUserDetailsService userDetailsService) {
-        return new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(
+            userDetailsService
+        );
+        authenticationManager.setPasswordEncoder(passwordEncoder());
+        return authenticationManager;
     }
 
     @Bean
@@ -60,6 +57,7 @@ public class SecurityConfiguration {
             )
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
+            //.addFilterAfter(new SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
             .headers(headers ->
                 headers
                     .contentSecurityPolicy(csp -> csp.policyDirectives(jHipsterProperties.getSecurity().getContentSecurityPolicy()))
