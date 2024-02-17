@@ -1,0 +1,28 @@
+{
+  "annotations": {
+    "changelogDate": "20240108104358"
+  },
+  "applications": "*",
+  "entityTableName": "uploaded_file",
+  "fields": [
+    {
+      "fieldName": "fileId",
+      "fieldType": "UUID",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "filename",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "data",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "any",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "UploadedFile",
+  "relationships": [],
+  "searchEngine": "no"
+}

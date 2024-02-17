@@ -20,6 +20,8 @@ spring:
   config:
     activate:
       on-profile: '!api-docs'
+  codec:
+    max-in-memory-size: 100MB
 springdoc:
   api-docs:
     enabled: false
