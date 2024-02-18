@@ -62,9 +62,6 @@ public class UploadedFileResource {
             throw new BadRequestAlertException("A new uploadedFile cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        // set dummy random UUID
-        uploadedFile.setFileId(java.util.UUID.randomUUID());
-
         return storeFileService
             .storeFile(uploadedFile)
             .map(result -> {
@@ -226,8 +223,8 @@ public class UploadedFileResource {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteUploadedFile(@PathVariable("id") Long id) {
         log.debug("REST request to delete UploadedFile : {}", id);
-        return uploadedFileRepository
-            .deleteById(id)
+        return storeFileService
+            .deleteFile(id)
             .then(
                 Mono.just(
                     ResponseEntity

@@ -12,6 +12,7 @@ import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,36 +23,55 @@ public class StoreFileService {
 
     private VectorStore vectorStore;
 
-    public StoreFileService(UploadedFileRepository uploadedFileRepository, VectorStore vectorStore) {
+    private JdbcTemplate jdbcTemplate;
+
+    public StoreFileService(UploadedFileRepository uploadedFileRepository, VectorStore vectorStore, JdbcTemplate jdbcTemplate) {
         this.uploadedFileRepository = uploadedFileRepository;
         this.vectorStore = vectorStore;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public Mono<UploadedFile> storeFile(UploadedFile uploadedFile) {
-        var pdfResource = new ByteArrayResource(uploadedFile.getData()) {
-            // workaround for the missing getFile() method in PagePdfDocumentReader
-            @Override
-            public File getFile() throws IOException {
-                return new File(uploadedFile.getFilename());
-            }
-        };
-        var config = PdfDocumentReaderConfig
-            .builder()
-            .withPageExtractedTextFormatter(
-                new ExtractedTextFormatter.Builder()
-                    .withNumberOfBottomTextLinesToDelete(3)
-                    .withNumberOfTopPagesToSkipBeforeDelete(1)
-                    .build()
-            )
-            .withPagesPerDocument(1)
-            .build();
+        var fileId = java.util.UUID.randomUUID();
+        uploadedFile.setFileId(fileId);
+        return uploadedFileRepository
+            .save(uploadedFile)
+            .flatMap(savedFile -> {
+                var pdfResource = new ByteArrayResource(savedFile.getData()) {
+                    @Override
+                    public File getFile() throws IOException {
+                        return new File(uploadedFile.getFilename());
+                    }
+                };
+                var config = PdfDocumentReaderConfig
+                    .builder()
+                    .withPageExtractedTextFormatter(
+                        new ExtractedTextFormatter.Builder()
+                            .withNumberOfBottomTextLinesToDelete(3)
+                            .withNumberOfTopPagesToSkipBeforeDelete(1)
+                            .build()
+                    )
+                    .withPagesPerDocument(1)
+                    .build();
 
-        var pdfReader = new PagePdfDocumentReader(pdfResource, config);
-        var textSplitter = new TokenTextSplitter();
+                var pdfReader = new PagePdfDocumentReader(pdfResource, config);
+                var textSplitter = new TokenTextSplitter();
+                List<Document> documents = textSplitter.apply(pdfReader.get());
+                documents.forEach(doc -> doc.getMetadata().put("fileId", fileId.toString()));
+                vectorStore.accept(documents);
 
-        List<Document> documents = textSplitter.apply(pdfReader.get());
-        vectorStore.accept(documents);
+                return Mono.just(savedFile);
+            });
+    }
 
-        return uploadedFileRepository.save(uploadedFile);
+    public Mono<Void> deleteFile(Long id) {
+        return uploadedFileRepository
+            .findById(id)
+            .flatMap(uploadedFile -> {
+                String deleteSql = "DELETE FROM vector_store WHERE metadata->>'fileId' = ?";
+                jdbcTemplate.update(deleteSql, uploadedFile.getFileId().toString());
+                return uploadedFileRepository.deleteById(id);
+            })
+            .then();
     }
 }
