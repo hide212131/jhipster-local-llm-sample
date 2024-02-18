@@ -57,7 +57,7 @@ public class SecurityConfiguration {
             )
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
-            //.addFilterAfter(new SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
+            .addFilterAfter(new SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
             .headers(headers ->
                 headers
                     .contentSecurityPolicy(csp -> csp.policyDirectives(jHipsterProperties.getSecurity().getContentSecurityPolicy()))
@@ -74,7 +74,13 @@ public class SecurityConfiguration {
             .authorizeExchange(authz ->
                 // prettier-ignore
                 authz
+                    .pathMatchers("/").permitAll()
+                    .pathMatchers("/*.*").permitAll()
                     .pathMatchers("/api/authenticate").permitAll()
+                    .pathMatchers("/api/register").permitAll()
+                    .pathMatchers("/api/activate").permitAll()
+                    .pathMatchers("/api/account/reset-password/init").permitAll()
+                    .pathMatchers("/api/account/reset-password/finish").permitAll()
                     .pathMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
                     .pathMatchers("/api/**").authenticated()
                     .pathMatchers("/services/**").authenticated()

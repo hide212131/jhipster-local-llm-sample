@@ -309,6 +309,11 @@
             <artifactId>spring-ai-pgvector-store</artifactId>
             <version>${spring-ai.version}</version>
         </dependency>
+        <dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-pdf-document-reader</artifactId>
+			<version>${spring-ai.version}</version>
+		</dependency>
         <!-- https://github.com/kherud/java-llama.cpp#quick-start -->
         <dependency>
             <groupId>de.kherud</groupId>

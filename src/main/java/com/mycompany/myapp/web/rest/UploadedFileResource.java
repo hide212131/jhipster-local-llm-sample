@@ -2,6 +2,7 @@ package com.mycompany.myapp.web.rest;
 
 import com.mycompany.myapp.domain.UploadedFile;
 import com.mycompany.myapp.repository.UploadedFileRepository;
+import com.mycompany.myapp.service.StoreFileService;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -40,8 +41,11 @@ public class UploadedFileResource {
 
     private final UploadedFileRepository uploadedFileRepository;
 
-    public UploadedFileResource(UploadedFileRepository uploadedFileRepository) {
+    private final StoreFileService storeFileService;
+
+    public UploadedFileResource(UploadedFileRepository uploadedFileRepository, StoreFileService storeFileService) {
         this.uploadedFileRepository = uploadedFileRepository;
+        this.storeFileService = storeFileService;
     }
 
     /**
@@ -61,8 +65,8 @@ public class UploadedFileResource {
         // set dummy random UUID
         uploadedFile.setFileId(java.util.UUID.randomUUID());
 
-        return uploadedFileRepository
-            .save(uploadedFile)
+        return storeFileService
+            .storeFile(uploadedFile)
             .map(result -> {
                 try {
                     return ResponseEntity
