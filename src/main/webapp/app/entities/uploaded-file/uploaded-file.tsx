@@ -22,8 +22,8 @@ export const UploadedFile = () => {
 
   const uploadedFileList = useAppSelector(state => state.uploadedFile.entities);
   const loading = useAppSelector(state => state.uploadedFile.loading);
-  const updateing = useAppSelector(state => state.updating);
-  const updateSuccess = useAppSelector(state => state.updateSuccess);
+  const updateing = useAppSelector(state => state.uploadedFile.updating);
+  const updateSuccess = useAppSelector(state => state.uploadedFile.updateSuccess);
 
   const getAllEntities = () => {
     dispatch(
@@ -115,7 +115,13 @@ export const UploadedFile = () => {
       <input {...getInputProps()} />
       <h2 id="uploaded-file-heading" data-cy="UploadedFileHeading">
         Uploaded Files
+        <div className="d-flex justify-content-end">
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={updateing}>
+            <FontAwesomeIcon icon="sync" spin={updateing} /> Refresh
+          </Button>
+        </div>
       </h2>
+      Drug and Drop File in this area
       <div className="table-responsive">
         {uploadedFileList && uploadedFileList.length > 0 ? (
           <Table responsive>
