@@ -6,11 +6,9 @@ const ChatPage = () => (
   <div>
     <iframe
       src="../chat-ui/index.html"
-      width="100vw"
-      height="100vh"
       title="Chat UI"
       seamless
-      style={{ border: 'none' }}
+      style={{ width: '100%', minHeight: '80vh', border: 'none' }}
       data-cy="chat-frame"
     />
   </div>
