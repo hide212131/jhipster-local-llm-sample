@@ -26,3 +26,12 @@ export const Home = () => (
     </NavLink>
   </NavItem>
 );
+
+export const Chat = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/chat" className="d-flex align-items-center">
+      <FontAwesomeIcon icon="message" />
+      <span>Chat</span>
+    </NavLink>
+  </NavItem>
+);

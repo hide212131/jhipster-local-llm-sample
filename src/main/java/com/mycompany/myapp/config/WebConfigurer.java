@@ -45,11 +45,11 @@ public class WebConfigurer implements WebFluxConfigurer {
         CorsConfiguration config = jHipsterProperties.getCors();
         if (!CollectionUtils.isEmpty(config.getAllowedOrigins()) || !CollectionUtils.isEmpty(config.getAllowedOriginPatterns())) {
             log.debug("Registering CORS filter");
-            source.registerCorsConfiguration("/v1/**", config);
             source.registerCorsConfiguration("/api/**", config);
             source.registerCorsConfiguration("/management/**", config);
             source.registerCorsConfiguration("/v3/api-docs", config);
             source.registerCorsConfiguration("/swagger-ui/**", config);
+            source.registerCorsConfiguration("/chat-ui/**", config);
         }
         return source;
     }
