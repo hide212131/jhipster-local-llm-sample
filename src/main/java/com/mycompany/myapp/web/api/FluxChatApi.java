@@ -47,7 +47,7 @@ public interface FluxChatApi {
                 responseCode = "200",
                 description = "OK",
                 content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = CreateChatCompletionStreamResponse.class)),
+                    @Content(mediaType = "text/event-stream", schema = @Schema(implementation = CreateChatCompletionStreamResponse.class)),
                 }
             ),
         },
