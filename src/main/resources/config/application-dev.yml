@@ -47,6 +47,11 @@ spring:
     password:
   thymeleaf:
     cache: false
+  ai:
+    llama-cpp:
+      model-home: '${SPRING_AI_LLAMA_CPP_MODEL_HOME:models}'
+      model-name: '${SPRING_AI_LLAMA_CPP_MODEL_NAME:mistral-7b-instruct-v0.2.Q2_K.gguf}'
+      embedding-model-name: '${SPRING_AI_LLAMA_CPP_EMBEDDING_MODEL_NAME:ggml-sfr-embedding-mistral-q4_k_m.gguf}'
 
 server:
   port: 8080

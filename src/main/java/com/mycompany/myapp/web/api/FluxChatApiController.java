@@ -68,34 +68,36 @@ public class FluxChatApiController implements FluxChatApi {
             );
 
             // search related contents from vector store
-            List<Document> results = vectorStore.similaritySearch(SearchRequest.query("Spring").withTopK(5));
-            String references = results.stream().map(Document::getContent).collect(Collectors.joining("\n"));
-            // replace last UserMessage in prompt's messages with template message with the result and UserMessage
-            var instructions = prompt.getInstructions();
-            var newInstructions = new ArrayList<>(instructions); // Mutable copy of instructions
+            // Here, as a provisional behavior, RAG works when the "gpt-4k" model is used.
+            if (createChatCompletionRequest.getModel().equals(CreateChatCompletionRequest.ModelEnum._4)) {
+                // Find the last UserMessage in the prompt's messages
+                var instructions = prompt.getInstructions();
+                UserMessage lastUserMessage = null;
+                for (int i = instructions.size() - 1; i >= 0; i--) {
+                    if (instructions.get(i) instanceof UserMessage) {
+                        lastUserMessage = (UserMessage) instructions.get(i);
+                        List<Document> results = vectorStore.similaritySearch(
+                            SearchRequest.query(lastUserMessage.getContent()).withTopK(5)
+                        );
+                        String references = results.stream().map(Document::getContent).collect(Collectors.joining("\n"));
+                        // replace last UserMessage in prompt's messages with template message with the result and UserMessage
+                        var newInstructions = new ArrayList<>(instructions); // Mutable copy of instructions
+                        String newMessage =
+                            "Please respond to the following search results and user messages.\n" +
+                            "UserMessage: " +
+                            lastUserMessage.getContent() +
+                            "\n" +
+                            "References: " +
+                            references;
+                        System.out.println("newMessage: " + newMessage);
+                        newInstructions.set(i, new UserMessage(newMessage)); // Replace last UserMessage
 
-            var lastUserMessageIndex = -1;
-            for (int i = newInstructions.size() - 1; i >= 0; i--) {
-                if (newInstructions.get(i) instanceof UserMessage) {
-                    lastUserMessageIndex = i;
-                    break;
+                        // Create a new LlamaPrompt with the updated instructions
+                        prompt = new LlamaPrompt(newInstructions);
+                        break;
+                    }
                 }
             }
-
-            if (lastUserMessageIndex != -1) {
-                String newMessage =
-                    "Please respond to the following search results and user messages.\n" +
-                    "UserMessage: " +
-                    ((UserMessage) newInstructions.get(lastUserMessageIndex)).getContent() +
-                    "\n" +
-                    "References: " +
-                    references;
-
-                newInstructions.set(lastUserMessageIndex, new UserMessage(newMessage)); // Replace last UserMessage
-            }
-
-            // Create a new LlamaPrompt with the updated instructions
-            prompt = new LlamaPrompt(newInstructions);
 
             Flux<ChatResponse> chatResponseFlux = chatClient.stream(prompt);
             var date = System.currentTimeMillis();

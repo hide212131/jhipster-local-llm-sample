@@ -7,8 +7,9 @@ public class LlamaCppProperties {
 
     public static final String CONFIG_PREFIX = "spring.ai.llama-cpp";
 
-    private String modelHome = System.getProperty("user.dir") + "/models";
-    private String modelName = "mistral-7b-instruct-v0.2.Q2_K.gguf";
+    private String modelHome;
+    private String modelName;
+    private String embeddingModelName;
 
     public String getModelHome() {
         return modelHome;
@@ -24,5 +25,13 @@ public class LlamaCppProperties {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    public String getEmbeddingModelName() {
+        return embeddingModelName;
+    }
+
+    public void setEmbeddingModelName(String embeddingModelName) {
+        this.embeddingModelName = embeddingModelName;
     }
 }

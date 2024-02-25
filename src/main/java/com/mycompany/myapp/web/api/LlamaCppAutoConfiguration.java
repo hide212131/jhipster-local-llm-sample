@@ -52,7 +52,7 @@ public class LlamaCppAutoConfiguration {
             }
         };
         embeddingClient.setModelHome(this.llamaCppProperties.getModelHome());
-        embeddingClient.setModelName(this.llamaCppProperties.getModelName());
+        embeddingClient.setModelName(this.llamaCppProperties.getEmbeddingModelName());
         logger.info("LlamaCppEmbeddingClient created: model={}", Path.of(embeddingClient.getModelHome(), embeddingClient.getModelName()));
         return embeddingClient;
     }

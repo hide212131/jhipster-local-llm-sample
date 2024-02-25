@@ -481,10 +481,6 @@
                         Enable the line below to have remote debugging of your application on port 5005
                         <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
                         -->
-                        <environmentVariables>
-                            <SPRING_AI_LLAMA_CPP_MODEL_HOME>${model.home}</SPRING_AI_LLAMA_CPP_MODEL_HOME>
-                            <SPRING_AI_LLAMA_CPP_MODEL_NAME>${integration.test.model}</SPRING_AI_LLAMA_CPP_MODEL_NAME>
-                        </environmentVariables>
                     </configuration>
                 </plugin>
                 <plugin>
