@@ -83,7 +83,7 @@ public class FluxChatApiController implements FluxChatApi {
                         // replace last UserMessage in prompt's messages with template message with the result and UserMessage
                         var newInstructions = new ArrayList<>(instructions); // Mutable copy of instructions
                         String newMessage =
-                            "Please respond to the following search results and user messages.\n" +
+                            "Please answer the questions in the 'UserMessage'. Find the information you need to answer in the 'References' section. If you do not have the information, please answer with 'I don't know'.\n" +
                             "UserMessage: " +
                             lastUserMessage.getContent() +
                             "\n" +
