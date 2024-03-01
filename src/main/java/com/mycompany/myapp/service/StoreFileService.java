@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
@@ -25,10 +26,18 @@ public class StoreFileService {
 
     private JdbcTemplate jdbcTemplate;
 
-    public StoreFileService(UploadedFileRepository uploadedFileRepository, VectorStore vectorStore, JdbcTemplate jdbcTemplate) {
+    private EmbeddingClient embeddingClient;
+
+    public StoreFileService(
+        UploadedFileRepository uploadedFileRepository,
+        VectorStore vectorStore,
+        JdbcTemplate jdbcTemplate,
+        EmbeddingClient embeddingClient
+    ) {
         this.uploadedFileRepository = uploadedFileRepository;
         this.vectorStore = vectorStore;
         this.jdbcTemplate = jdbcTemplate;
+        this.embeddingClient = embeddingClient;
     }
 
     public Mono<UploadedFile> storeFile(UploadedFile uploadedFile) {
@@ -55,7 +64,12 @@ public class StoreFileService {
                     .build();
 
                 var pdfReader = new PagePdfDocumentReader(pdfResource, config);
-                var textSplitter = new TokenTextSplitter();
+                var textSplitter = new TokenTextSplitter() {
+                    @Override
+                    protected List<String> splitText(String text) {
+                        return split(text, embeddingClient.dimensions() - 3); // 3 is the number of tokens for 'query:'
+                    }
+                };
                 List<Document> documents = textSplitter.apply(pdfReader.get());
                 documents.forEach(doc -> doc.getMetadata().put("fileId", fileId.toString()));
                 vectorStore.accept(documents);

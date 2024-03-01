@@ -51,7 +51,10 @@ spring:
     llama-cpp:
       model-home: '${SPRING_AI_LLAMA_CPP_MODEL_HOME:models}'
       model-name: '${SPRING_AI_LLAMA_CPP_MODEL_NAME:mistral-7b-instruct-v0.2.Q2_K.gguf}'
-      embedding-model-name: '${SPRING_AI_LLAMA_CPP_EMBEDDING_MODEL_NAME:ggml-sfr-embedding-mistral-q4_k_m.gguf}'
+    embedding:
+      transformer:
+        onnx.modelUri: '${SPRING_AI_EMBEDDING_TRANSFORMER_ONNX_MODEL_URI:https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx}'
+        tokenizer.uri: '${SPRING_AI_EMBEDDING_TRANSFORMER_TOKENIZER_URI:https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json}'
 
 server:
   port: 8080

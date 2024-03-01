@@ -325,6 +325,16 @@
 			<artifactId>spring-ai-pdf-document-reader</artifactId>
 			<version>${spring-ai.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-transformers</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
         <!-- https://github.com/kherud/java-llama.cpp#quick-start -->
         <dependency>
             <groupId>de.kherud</groupId>
