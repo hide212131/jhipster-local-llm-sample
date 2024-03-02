@@ -1,34 +1,65 @@
-# Example implementation of an OpenAI API compatible server using JHipster and llama.cpp, a local LLM
+# Building a RAG Server with JHipster: Integrating Local LLM, OpenAI API, and Spring AI
 
-Thanks to the wonderful [JHispter](https://www.jhipster.tech/), [llama.cpp](https://github.com/ggerganov/llama.cpp), [Java Bindings for llama.cpp](https://github.com/kherud/java-llama.cpp) and all the open llm.
+This is a sample application for implementing RAG (Retrieval Argument Generation) using Local LLM, featuring [llama.cpp](https://github.com/ggerganov/llama.cpp) and [Java Bindings for llama.cpp](https://github.com/kherud/java-llama.cpp). It launches a server compatible with the OpenAI API on the Java platform and integrates [JHipster](https://www.jhipster.tech/) with [Spring AI](https://docs.spring.io/spring-ai/reference/index.html) and [pgvector](https://github.com/pgvector/pgvector). The application also includes the [BetterChatGPT](https://github.com/ztjhz/BetterChatGPT) UI and can be executed on a standalone PC.
+
+Thank you for the wonderful OSS products and all the open LLMs.
 
 ![jhipster-llm](jhipster-llm.gif)
 
-Confirmed accessible via [Chatbot ui](https://github.com/mckaywrigley/chatbot-ui).
+Confirmed compatibility with Macbook Pro M3 (should also work on other OS).
 
-Only Macbook pro m3 is confirmed to work.
+## Usage
 
-## Prerequisites
+Prerequisites:
 
-The following environment variables must be set in Chatbot ui.
+- Node.js 18 or higher
+- Java 17 or higher
+- Docker
 
-```bash
-export OPENAI_API_HOST=http://localhost:8080
-export OPENAI_API_KEY=(random key. not used)
-export OPENAI_API_TYPE=local
-```
-
-Download the LLM for testing with the following command.
+Clone this repository and build:
 
 ```bash
-./mvnw verify
-```
-
-## Running the server
-
-```bash
+./mvnw verify # downloads the LLM (mistral-7b-instruct-v0.2.Q2_K.gguf)
+npm run docker:db:up # runs pgvector
 ./mvnw
 ```
+
+When you execute the `./mvnw` command, the following actions are performed:
+
+- Building the Java server
+- Downloading and building the UI
+- Launching the JHipster RAG server
+- On the first launch only:
+  - Downloading the embedding model (default is `e5-small-v2`)
+  - Constructing pgvector tables
+
+Using the Application:
+
+- Access http://localhost:8080.
+- Log in via the header menu 'Account' - 'Sign in' using the credentials 'user/user'.
+- Upload a 'PDF file' through the 'File Upload' section in the header menu using drag & drop.
+- In the 'Chat' section:
+  - By default, it functions as a basic chat application using the local LLM.
+  - Selecting 'gpt-4' from the menu (temporarily assigned for this sample) enables the RAG feature.
+    - When you ask a question, the chat provides answers based on the content of the uploaded PDF file.
+
+---
+
+## Execute Your Own LLMs
+
+Set the environment variables as follows:
+
+```
+# Inference model in gguf format
+export SPRING_AI_LLAMA_CPP_MODEL_NAME=ELYZA-japanese-Llama-2-13b-fast-instruct-q8_0.gguf
+
+# Embedding model in ONNX format
+export SPRING_AI_EMBEDDING_TRANSFORMER_TOKENIZER_URI=https://huggingface.co/intfloat/multilingual-e5-base/resolve/main/onnx/tokenizer.json
+export SPRING_AI_EMBEDDING_TRANSFORMER_ONNX_MODEL_URI=https://huggingface.co/intfloat/multilingual-e5-base/resolve/main/onnx/model.onnx
+```
+
+- For the inference model, download a gguf format model readable by llama.cpp and deploy it to the 'models' directory.
+- For the embedding model, set the environment variable; the ONNX model will be downloaded automatically to `~/.djl.ii` when the server launches.
 
 # Original JHipster README.md
 
