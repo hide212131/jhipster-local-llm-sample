@@ -35,3 +35,12 @@ export const Chat = () => (
     </NavLink>
   </NavItem>
 );
+
+export const FileUpload = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/uploaded-file" className="d-flex align-items-center">
+      <FontAwesomeIcon icon="th-list" />
+      <span>File Upload</span>
+    </NavLink>
+  </NavItem>
+);

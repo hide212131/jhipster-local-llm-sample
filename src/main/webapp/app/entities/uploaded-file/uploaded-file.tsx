@@ -116,11 +116,11 @@ export const UploadedFile = () => {
       <h2 id="uploaded-file-heading" data-cy="UploadedFileHeading">
         Uploaded Files
         <div className="d-flex justify-content-end">
-          <Button color="primary" onClick={open}>
-            <FontAwesomeIcon icon="upload" /> Upload
+          <Button color="primary" onClick={open} disabled={loading}>
+            <FontAwesomeIcon icon={updateing ? 'sync' : 'upload'} spin={updateing} /> Upload
           </Button>
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={updateing}>
-            <FontAwesomeIcon icon="sync" spin={updateing} /> Refresh
+          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh
           </Button>
         </div>
       </h2>
