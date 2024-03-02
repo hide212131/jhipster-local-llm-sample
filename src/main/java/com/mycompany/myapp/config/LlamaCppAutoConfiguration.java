@@ -1,5 +1,6 @@
-package com.mycompany.myapp.web.api;
+package com.mycompany.myapp.config;
 
+import com.mycompany.myapp.service.llm.LlamaCppChatClient;
 import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

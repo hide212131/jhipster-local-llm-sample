@@ -20,6 +20,14 @@
         </repository>
         <!-- https://docs.spring.io/spring-ai/reference/getting-started.html#_dependencies -->
         <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>spring-snapshots</id>
             <name>Spring Snapshots</name>
             <url>https://repo.spring.io/snapshot</url>
@@ -94,7 +102,7 @@
         <properties-maven-plugin.version>1.2.1</properties-maven-plugin.version>
         <sonar-maven-plugin.version>3.10.0.2594</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
-        <spring-ai.version>0.8.0-SNAPSHOT</spring-ai.version>
+        <spring-ai.version>0.8.0</spring-ai.version>
         <java-llamacpp.version>2.3.5</java-llamacpp.version>
         <model.home>${project.basedir}/models</model.home>
         <integration.test.model>mistral-7b-instruct-v0.2.Q2_K.gguf</integration.test.model>
@@ -961,7 +969,7 @@
                                 <inputSpec>${project.basedir}/src/main/resources/swagger/api.yml</inputSpec>
                                 <generatorName>spring</generatorName>
                                 <apiPackage>com.mycompany.myapp.web.api</apiPackage>
-                                <modelPackage>com.mycompany.myapp.service.api.dto</modelPackage>
+                                <modelPackage>com.mycompany.myapp.service.llm.dto</modelPackage>
                                 <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                                 <skipValidateSpec>false</skipValidateSpec>
                                 <configOptions>

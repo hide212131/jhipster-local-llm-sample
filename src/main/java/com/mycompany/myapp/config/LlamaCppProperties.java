@@ -1,4 +1,4 @@
-package com.mycompany.myapp.web.api;
+package com.mycompany.myapp.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

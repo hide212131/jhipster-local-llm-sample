@@ -1,4 +1,4 @@
-package com.mycompany.myapp.web.api;
+package com.mycompany.myapp.service.llm;
 
 import de.kherud.llama.InferenceParameters;
 import de.kherud.llama.LlamaModel;

@@ -1,4 +1,4 @@
-package com.mycompany.myapp.web.api;
+package com.mycompany.myapp.service.llm;
 
 import java.util.List;
 import org.springframework.ai.chat.messages.AssistantMessage;

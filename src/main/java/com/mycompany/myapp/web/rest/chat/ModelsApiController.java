@@ -1,10 +1,9 @@
-package com.mycompany.myapp.web.api;
+package com.mycompany.myapp.web.rest.chat;
 
-import com.mycompany.myapp.service.api.dto.ListModelsResponse;
-import com.mycompany.myapp.service.api.dto.Model;
+import com.mycompany.myapp.service.llm.dto.ListModelsResponse;
+import com.mycompany.myapp.service.llm.dto.Model;
+import com.mycompany.myapp.web.api.ModelsApi;
 import jakarta.annotation.Generated;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

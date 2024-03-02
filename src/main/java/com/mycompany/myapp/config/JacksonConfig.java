@@ -1,9 +1,8 @@
-package com.mycompany.myapp.web.api;
+package com.mycompany.myapp.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.mycompany.myapp.service.api.dto.ChatCompletionRequestMessage;
-import org.openapitools.jackson.nullable.JsonNullableModule;
+import com.mycompany.myapp.service.llm.dto.ChatCompletionRequestMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
